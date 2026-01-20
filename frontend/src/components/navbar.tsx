@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const pathname = usePathname();
+    const isHome = pathname === "/";
 
     useEffect(() => {
         const handleScroll = () => {
@@ -16,19 +19,22 @@ export default function Navbar() {
     }, []);
 
     const navLinks = [
-        { name: "Portfolio", href: "/" },
-        { name: "Biography", href: "/about" },
+        { name: "Home", href: "/" },
+        { name: "Biography", href: "/bio" },
         { name: "Measurements", href: "/measurements" },
         { name: "Contact", href: "/contact" },
     ];
 
+    const navbarStyles = isHome
+        ? `fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-6 px-12 ${scrolled ? 'bg-white/80 backdrop-blur-md py-4' : 'bg-transparent'}`
+        : "relative z-50 bg-white py-6 px-12  border-gray-100";
+
     return (
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-6 px-12 ${scrolled ? 'bg-white/80 backdrop-blur-md py-4' : 'bg-transparent'
-            }`}>
+        <nav className={navbarStyles}>
             <div className="max-w-[1600px] mx-auto flex justify-between items-center">
                 {/* Logo */}
                 <Link href="/" className="group">
-                    <div className="text-3xl font-bold tracking-tight font-serif transition-colors duration-300 group-hover:text-gray-600">
+                    <div className="text-4xl font-normal tracking-[0.2em] font-serif transition-colors duration-300 group-hover:text-gray-600">
                         OKAN UZUN
                     </div>
                 </Link>

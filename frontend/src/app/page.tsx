@@ -6,9 +6,10 @@ export default function Home() {
   return (
     <main>
       {/* Buraya diğer section'lar eklenebilir */}
-      <Navbar />
+
       <Hero />
-      <Footer />  
+      <Footer />
+ 
     </main>
   );
 }
