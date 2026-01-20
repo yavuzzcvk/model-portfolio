@@ -19,10 +19,10 @@ export default function Navbar() {
     }, []);
 
     const navLinks = [
-        { name: "Home", href: "/" },
+        { name: "Gallery", href: "/gallery" },
         { name: "Biography", href: "/bio" },
         { name: "Measurements", href: "/measurements" },
-        { name: "Contact", href: "/contact" },
+        { name: "Contact", href: "/#contact" },
     ];
 
     const navbarStyles = isHome

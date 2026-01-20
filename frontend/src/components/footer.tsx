@@ -1,8 +1,8 @@
-import { Instagram, Twitter, Linkedin, Github } from 'lucide-react';
+import { Instagram, Twitter, Linkedin, Mail } from 'lucide-react';
 
 export default function Footer() {
     return (
-        <footer className="relative w-full bg-[#4B1E26] text-white overflow-hidden">
+        <footer id="contact" className="relative w-full bg-[#4B1E26] text-white overflow-hidden">
 
             {/* Big Background Text */}
             <div className="absolute inset-x-0 bottom-0 flex justify-center pointer-events-none select-none">
@@ -21,29 +21,29 @@ export default function Footer() {
 
                         {/* Products */}
                         <div className="p-8 border-b md:border-b-0 md:border-r border-white/10">
-                            <h4 className="text-sm font-semibold mb-6">Products</h4>
+                            <h4 className="text-sm font-semibold mb-6">Portfolio</h4>
                             <ul className="space-y-3 text-sm text-white/70">
-                                <li>Portfolio</li>
-                                <li>Gallery</li>
-                                <li>Services</li>
-                                <li>Projects</li>
+                                <li>Editorial</li>
+                                <li>Fashion</li>
+                                <li>Commercial</li>
+                                <li>Campaigns</li>
                             </ul>
                         </div>
 
                         {/* Company */}
                         <div className="p-8 border-b md:border-b-0 md:border-r border-white/10">
-                            <h4 className="text-sm font-semibold mb-6">Company</h4>
+                            <h4 className="text-sm font-semibold mb-6">Profile</h4>
                             <ul className="space-y-3 text-sm text-white/70">
-                                <li>Contact Us</li>
-                                <li>About</li>
-                                <li>Careers ↗</li>
+                                <li>Biography</li>
+                                <li>Measurements</li>
+                                <li>Contact</li>
                             </ul>
                         </div>
 
                         {/* Social (Eski Legal Alanı) */}
                         <div className="p-8">
                             <h4 className="text-sm font-semibold mb-6">Social</h4>
-                            
+
                             {/* İkonlar buraya eklendi */}
                             <div className="flex items-center gap-4">
                                 <a href="#" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
@@ -55,8 +55,8 @@ export default function Footer() {
                                 <a href="#" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
                                     <Linkedin className="w-5 h-5" />
                                 </a>
-                                <a href="#" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
-                                    <Github className="w-5 h-5" />
+                                <a href="mailto:info@okanuzun.com" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
+                                    <Mail className="w-5 h-5" />
                                 </a>
                             </div>
                         </div>
