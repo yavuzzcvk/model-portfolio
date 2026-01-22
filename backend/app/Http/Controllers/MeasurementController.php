@@ -48,6 +48,8 @@ class MeasurementController extends Controller
     {
         $required = $partial ? 'sometimes' : 'required';
         $rules = [
+            'images' => [$partial ? 'sometimes' : 'required', 'array'],
+            'images.*' => ['string', 'max:255'],
             'height_cm' => [$required, 'integer', 'min:0'],
             'weight_kg' => [$partial ? 'sometimes' : 'nullable', 'nullable', 'integer', 'min:0'],
             'chest_in' => [$required, 'integer', 'min:0'],

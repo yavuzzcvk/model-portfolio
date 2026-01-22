@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::create('measurements', function (Blueprint $table) {
             $table->id();
+
+            $table->json('images')->nullable();
+            
             // Temel ölçüler
+        
             $table->unsignedSmallInteger('height_cm');
             $table->unsignedSmallInteger('weight_kg')->nullable();
 

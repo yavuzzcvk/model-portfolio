@@ -13,6 +13,10 @@ class BiographyController extends Controller
     {
         $biographies = Biography::query()->latest()->get();
 
+        // image_url ile birlikte döndür
+        $biographies->each(function ($bio) {
+            $bio->makeHidden('image');
+        });
         return response()->json($biographies);
     }
 
@@ -20,12 +24,17 @@ class BiographyController extends Controller
     {
         $data = $this->validatedData($request, false);
         $biography = Biography::create($data);
-
+        $biography->refresh();
+        // image_url ile birlikte döndür
+        $biography->makeHidden('image');
         return response()->json($biography, Response::HTTP_CREATED);
     }
 
     public function show(Biography $biography): JsonResponse
     {
+        $biography->refresh();
+        // image_url ile birlikte döndür
+        $biography->makeHidden('image');
         return response()->json($biography);
     }
 
@@ -34,6 +43,8 @@ class BiographyController extends Controller
         $data = $this->validatedData($request, true);
         $biography->update($data);
 
+        // image_url ile birlikte döndür
+        $biography->makeHidden('image');
         return response()->json($biography);
     }
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BiographyController;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\HeroController;
 use App\Http\Controllers\MeasurementController;
 use App\Http\Controllers\SettingController;
 use Illuminate\Http\Request;
@@ -15,3 +16,5 @@ Route::apiResource('measurements', MeasurementController::class);
 Route::apiResource('galleries', GalleryController::class);
 Route::apiResource('biographies', BiographyController::class);
 Route::apiResource('settings', SettingController::class);
+Route::apiResource('heroes', HeroController::class);
+

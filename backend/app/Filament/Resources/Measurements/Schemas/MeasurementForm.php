@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Measurements\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Schema;
 
 class MeasurementForm
@@ -11,6 +12,13 @@ class MeasurementForm
     {
         return $schema
             ->components([
+                FileUpload::make('images')
+                    ->required()
+                    ->image()
+                    ->multiple()
+                    ->maxSize(1024)
+                    ->disk('public')
+                    ->directory('measurements'),
                 TextInput::make('height_cm')
                     ->required()
                     ->numeric(),
