@@ -1,25 +1,33 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getMeasurements, MeasurementData } from '@/lib/api';
 
 export default function ModelProfile() {
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+    const [measurementData, setMeasurementData] = useState<MeasurementData | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    const measurements = [
-        { label: 'Height', value: "5'9" },
-        { label: 'Bust', value: '32' },
-        { label: 'Waist', value: '25' },
-        { label: 'Hips', value: '35' },
-        { label: 'Shoe', value: '9.5' },
-        { label: 'Dress', value: '0-2' }
-    ];
+    useEffect(() => {
+        async function fetchData() {
+            const data = await getMeasurements();
+            setMeasurementData(data);
+            setLoading(false);
+        }
+        fetchData();
+    }, []);
 
-    const photos = [
-        'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800&h=1200&fit=crop',
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1200&fit=crop',
-        'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&h=1200&fit=crop',
-        'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=800&h=1200&fit=crop'
-    ];
+    // API'den gelen verilerle measurements dizisini oluştur
+    const measurements = measurementData ? [
+        { label: 'Height', value: measurementData.height_cm ? `${measurementData.height_cm} cm` : '-' },
+        { label: 'Chest', value: measurementData.chest_in ? `${measurementData.chest_in} cm` : '-' },
+        { label: 'Waist', value: measurementData.waist_in ? `${measurementData.waist_in} cm` : '-' },
+        { label: 'Shoe', value: measurementData.shoe_size && measurementData.shoe_region ? `${measurementData.shoe_size} ${measurementData.shoe_region}` : '-' },
+        { label: 'Suit', value: measurementData.suit_size || '-' },
+        { label: 'Hair', value: measurementData.hair_color || '-' }
+    ] : [];
+
+    const photos = measurementData?.images_url || [];
 
     const handlePrevious = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -30,6 +38,14 @@ export default function ModelProfile() {
         e.stopPropagation();
         setSelectedIndex((prev) => (prev !== null ? (prev + 1) % photos.length : null));
     };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen py-24 px-4 bg-white flex items-center justify-center">
+                <p className="text-gray-600 font-serif">Yükleniyor...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen py-24 px-4 bg-white">
@@ -48,23 +64,25 @@ export default function ModelProfile() {
                 </div>
 
                 {/* Photo Gallery */}
-                <div className="p-8">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {photos.map((photo, index) => (
-                            <div
-                                key={index}
-                                className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-                                onClick={() => setSelectedIndex(index)}
-                            >
-                                <img
-                                    src={photo}
-                                    alt={`Portfolio ${index + 1}`}
-                                    className="w-full h-80 object-cover hover:scale-105 transition-transform duration-300"
-                                />
-                            </div>
-                        ))}
+                {photos.length > 0 && (
+                    <div className="p-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {photos.map((photo, index) => (
+                                <div
+                                    key={index}
+                                    className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+                                    onClick={() => setSelectedIndex(index)}
+                                >
+                                    <img
+                                        src={photo}
+                                        alt={`Portfolio ${index + 1}`}
+                                        className="w-full h-80 object-cover hover:scale-105 transition-transform duration-300"
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* Lightbox Modal */}

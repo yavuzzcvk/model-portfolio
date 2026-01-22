@@ -3,11 +3,14 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ChevronUp } from 'lucide-react';
+import { getGalleryItems, GalleryItem as APIGalleryItem } from '@/lib/api';
 
 export default function GalleryPage() {
     const [selectedImage, setSelectedImage] = useState<number | null>(null);
-    const [activeFilter, setActiveFilter] = useState<'all' | 'image' | 'video'>('all');
+    const [activeFilter, setActiveFilter] = useState<'image' | 'video'>('image');
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const [galleryData, setGalleryData] = useState<APIGalleryItem[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -17,41 +20,51 @@ export default function GalleryPage() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    useEffect(() => {
+        async function fetchData() {
+            const data = await getGalleryItems();
+            setGalleryData(data);
+            setLoading(false);
+        }
+        fetchData();
+    }, []);
+
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     interface GalleryItem {
-        id: number;
+        id: string;
         type: 'image' | 'video';
         src: string;
         alt: string;
-        orientation: 'portrait' | 'landscape';
-        thumbnail?: string;
     }
 
-    // Statik galeri verileri
-    const galleryItems: GalleryItem[] = [
-        { id: 1, type: 'image', src: '/images/gallery/1.jpg', alt: 'Gallery Image 1', orientation: 'portrait' },
-        { id: 2, type: 'image', src: '/images/gallery/2.jpg', alt: 'Gallery Image 2', orientation: 'landscape' },
-        { id: 3, type: 'image', src: '/images/gallery/3.jpg', alt: 'Gallery Image 3', orientation: 'portrait' },
-        { id: 4, type: 'image', src: '/images/gallery/4.jpg', alt: 'Gallery Image 4', orientation: 'landscape' },
-        { id: 6, type: 'image', src: '/images/gallery/6.jpg', alt: 'Gallery Image 6', orientation: 'landscape' },
-        { id: 7, type: 'image', src: '/images/gallery/7.jpg', alt: 'Gallery Image 7', orientation: 'portrait' },
-        { id: 8, type: 'image', src: '/images/gallery/8.jpg', alt: 'Gallery Image 8', orientation: 'landscape' },
-        { id: 9, type: 'image', src: '/images/gallery/9.jpg', alt: 'Gallery Image 9', orientation: 'portrait' },
-        { id: 11, type: 'image', src: '/images/gallery/11.jpg', alt: 'Gallery Image 11', orientation: 'portrait' },
-        { id: 12, type: 'image', src: '/images/gallery/12.jpg', alt: 'Gallery Image 12', orientation: 'landscape' },
-        { id: 13, type: 'image', src: '/images/gallery/13.jpg', alt: 'Gallery Image 13', orientation: 'portrait' },
-        { id: 14, type: 'image', src: '/images/gallery/14.jpg', alt: 'Gallery Image 14', orientation: 'landscape' },
-        { id: 16, type: 'image', src: '/images/gallery/16.jpg', alt: 'Gallery Image 16', orientation: 'landscape' },
-        { id: 17, type: 'image', src: '/images/gallery/17.jpg', alt: 'Gallery Image 17', orientation: 'portrait' },
-        { id: 18, type: 'image', src: '/images/gallery/18.jpg', alt: 'Gallery Image 18', orientation: 'portrait' },
-    ];
+    const photoItems: GalleryItem[] = galleryData
+        .filter(item => Boolean(item.image_url))
+        .map(item => ({
+            id: `${item.id}-image`,
+            type: 'image' as const,
+            src: item.image_url ?? '',
+            alt: `Gallery photo ${item.id}`
+        }));
 
-    const filteredItems = galleryItems.filter(item =>
-        activeFilter === 'all' ? true : item.type === activeFilter
-    );
+    const videoItems: GalleryItem[] = galleryData
+        .filter(item => Boolean(item.video_url))
+        .map(item => ({
+            id: `${item.id}-video`,
+            type: 'video' as const,
+            src: item.video_url ?? '',
+            alt: `Gallery video ${item.id}`
+        }));
+
+    const filteredItems = activeFilter === 'image' ? photoItems : videoItems;
+
+    useEffect(() => {
+        if (selectedImage !== null && selectedImage >= filteredItems.length) {
+            setSelectedImage(null);
+        }
+    }, [filteredItems.length, selectedImage]);
 
     const handlePrevious = () => {
         if (selectedImage !== null && selectedImage > 0) {
@@ -88,12 +101,6 @@ export default function GalleryPage() {
                     {/* Filter Segment */}
                     <div className="flex justify-center gap-8 mt-8 border-b border-gray-100 pb-4">
                         <button
-                            onClick={() => { setActiveFilter('all'); setSelectedImage(null); }}
-                            className={`text-sm uppercase tracking-widest transition-colors ${activeFilter === 'all' ? 'text-black font-semibold' : 'text-gray-400 hover:text-black'}`}
-                        >
-                            All
-                        </button>
-                        <button
                             onClick={() => { setActiveFilter('image'); setSelectedImage(null); }}
                             className={`text-sm uppercase tracking-widest transition-colors ${activeFilter === 'image' ? 'text-black font-semibold' : 'text-gray-400 hover:text-black'}`}
                         >
@@ -108,37 +115,52 @@ export default function GalleryPage() {
                     </div>
                 </div>
 
-                {/* Masonry Grid */}
-                <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
-                    {filteredItems.map((item, index) => (
-                        <div
-                            key={item.id}
-                            className="break-inside-avoid cursor-pointer group relative overflow-hidden mb-4"
-                            onClick={() => setSelectedImage(index)}
-                        >
-                            <div className="relative w-full">
-                                <Image
-                                    src={item.type === 'video' ? (item.thumbnail || '') : item.src}
-                                    alt={item.alt}
-                                    width={800}
-                                    height={item.orientation === 'portrait' ? 1200 : 600}
-                                    className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
-                                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                />
-                                {item.type === 'video' && (
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="w-12 h-12 bg-white/80 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                                            <svg className="w-6 h-6 text-black fill-current" viewBox="0 0 24 24">
-                                                <path d="M8 5v14l11-7z" />
-                                            </svg>
+                {loading ? (
+                    <div className="text-center py-20">
+                        <p className="text-gray-600 font-serif">Yükleniyor...</p>
+                    </div>
+                ) : (
+                    /* Masonry Grid */
+                    <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+                        {filteredItems.map((item, index) => (
+                            <div
+                                key={item.id}
+                                className="break-inside-avoid cursor-pointer group relative overflow-hidden mb-4"
+                                onClick={() => setSelectedImage(index)}
+                            >
+                                <div className="relative w-full">
+                                    {item.type === 'video' ? (
+                                        <video
+                                            src={item.src}
+                                            className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                                            muted
+                                        />
+                                    ) : (
+                                        <Image
+                                            src={item.src}
+                                            alt={item.alt}
+                                            width={800}
+                                            height={900}
+                                            className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                            unoptimized
+                                        />
+                                    )}
+                                    {item.type === 'video' && (
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <div className="w-12 h-12 bg-white/80 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                                <svg className="w-6 h-6 text-black fill-current" viewBox="0 0 24 24">
+                                                    <path d="M8 5v14l11-7z" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
+                                    )}
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Lightbox */}
@@ -200,6 +222,7 @@ export default function GalleryPage() {
                                     fill
                                     className="object-contain"
                                     sizes="100vw"
+                                    unoptimized
                                     priority
                                 />
                             </div>

@@ -1,6 +1,43 @@
-import { Instagram, Twitter, Linkedin, Mail } from 'lucide-react';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Instagram, Twitter, Linkedin, Mail, Facebook, Youtube, Github } from 'lucide-react';
+
+interface Settings {
+    email: string | null;
+    phone: string | null;
+    address: string | null;
+    instagram: string | null;
+    twitter: string | null;
+    facebook: string | null;
+    linkedin: string | null;
+    youtube: string | null;
+    tiktok: string | null;
+    github: string | null;
+}
 
 export default function Footer() {
+    const [settings, setSettings] = useState<Settings | null>(null);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const response = await fetch('http://backend.test/api/settings');
+                const data = await response.json();
+                // API dizi döndürüyor, ilk elemanı alıyoruz
+                if (Array.isArray(data) && data.length > 0) {
+                    setSettings(data[0]);
+                } else if (data && !Array.isArray(data)) {
+                    setSettings(data);
+                }
+            } catch (error) {
+                console.error('Error fetching settings:', error);
+            }
+        };
+
+        fetchSettings();
+    }, []);
+
     return (
         <footer id="contact" className="relative w-full bg-[#4B1E26] text-white overflow-hidden">
 
@@ -40,24 +77,46 @@ export default function Footer() {
                             </ul>
                         </div>
 
-                        {/* Social (Eski Legal Alanı) */}
+                        {/* Social */}
                         <div className="p-8">
                             <h4 className="text-sm font-semibold mb-6">Social</h4>
 
-                            {/* İkonlar buraya eklendi */}
                             <div className="flex items-center gap-4">
-                                <a href="#" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
-                                    <Instagram className="w-5 h-5" />
-                                </a>
-                                <a href="#" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
-                                    <Twitter className="w-5 h-5" />
-                                </a>
-                                <a href="#" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
-                                    <Linkedin className="w-5 h-5" />
-                                </a>
-                                <a href="mailto:info@okanuzun.com" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
-                                    <Mail className="w-5 h-5" />
-                                </a>
+                                {settings?.instagram && (
+                                    <a href={settings.instagram} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
+                                        <Instagram className="w-5 h-5" />
+                                    </a>
+                                )}
+                                {settings?.twitter && (
+                                    <a href={settings.twitter} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
+                                        <Twitter className="w-5 h-5" />
+                                    </a>
+                                )}
+                                {settings?.facebook && (
+                                    <a href={settings.facebook} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
+                                        <Facebook className="w-5 h-5" />
+                                    </a>
+                                )}
+                                {settings?.linkedin && (
+                                    <a href={settings.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
+                                        <Linkedin className="w-5 h-5" />
+                                    </a>
+                                )}
+                                {settings?.youtube && (
+                                    <a href={settings.youtube} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
+                                        <Youtube className="w-5 h-5" />
+                                    </a>
+                                )}
+                                {settings?.github && (
+                                    <a href={settings.github} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
+                                        <Github className="w-5 h-5" />
+                                    </a>
+                                )}
+                                {settings?.email && (
+                                    <a href={`mailto:${settings.email}`} className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
+                                        <Mail className="w-5 h-5" />
+                                    </a>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -104,7 +163,6 @@ export default function Footer() {
                 {/* Bottom */}
                 <div className="mt-12 text-sm text-white/60 flex justify-between items-center">
                     <p>© 2025 Okan Uzun. All rights reserved.</p>
-                    {/* Legal linkleri buraya küçük bir satır olarak taşımak istersen opsiyonel: */}
                     <div className="hidden md:flex gap-6 text-xs text-white/40">
                         <span>Privacy</span>
                         <span>Terms</span>
