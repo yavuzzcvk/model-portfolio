@@ -1,7 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Instagram, Twitter, Linkedin, Mail, Facebook, Youtube, Github } from 'lucide-react';
+import {
+    Instagram,
+    Twitter,
+    Linkedin,
+    Mail,
+    Facebook,
+    Youtube,
+    Github
+} from 'lucide-react';
 
 interface Settings {
     email: string | null;
@@ -19,12 +27,16 @@ interface Settings {
 export default function Footer() {
     const [settings, setSettings] = useState<Settings | null>(null);
 
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState('');
+
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const response = await fetch('http://backend.test/api/settings');
+                const response = await fetch('/api/settings');
                 const data = await response.json();
-                // API dizi döndürüyor, ilk elemanı alıyoruz
+
                 if (Array.isArray(data) && data.length > 0) {
                     setSettings(data[0]);
                 } else if (data && !Array.isArray(data)) {
@@ -35,8 +47,54 @@ export default function Footer() {
             }
         };
 
-        fetchSettings();
+        fetchSettings().catch(() => undefined);
     }, []);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+        setSuccess(false);
+
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    message: formData.get('message'),
+                }),
+            });
+
+            let data: { error?: string } | null = null;
+            try {
+                data = await res.json();
+            } catch {
+                data = null;
+            }
+
+            setLoading(false);
+
+            if (res.ok) {
+                setSuccess(true);
+                setError('');
+                form.reset();
+            } else {
+                setSuccess(false);
+                setError(data?.error || 'Bir hata oluştu');
+            }
+        } catch (err) {
+            setLoading(false);
+            setSuccess(false);
+            setError('Sunucuya ulaşılamadı');
+        }
+    };
 
     return (
         <footer id="contact" className="relative w-full bg-[#4B1E26] text-white overflow-hidden">
@@ -50,13 +108,11 @@ export default function Footer() {
 
             <div className="relative max-w-7xl mx-auto px-2 py-20 min-h-[500px]">
 
-                {/* Main Content - Side by Side */}
                 <div className="flex flex-col lg:flex-row lg:items-start gap-12">
 
-                    {/* Left Side - Grid */}
+                    {/* Left Side */}
                     <div className="grid grid-cols-1 md:grid-cols-3 border border-white/10 flex-1">
 
-                        {/* Products */}
                         <div className="p-8 border-b md:border-b-0 md:border-r border-white/10">
                             <h4 className="text-sm font-semibold mb-6">Portfolio</h4>
                             <ul className="space-y-3 text-sm text-white/70">
@@ -67,7 +123,6 @@ export default function Footer() {
                             </ul>
                         </div>
 
-                        {/* Company */}
                         <div className="p-8 border-b md:border-b-0 md:border-r border-white/10">
                             <h4 className="text-sm font-semibold mb-6">Profile</h4>
                             <ul className="space-y-3 text-sm text-white/70">
@@ -77,95 +132,47 @@ export default function Footer() {
                             </ul>
                         </div>
 
-                        {/* Social */}
                         <div className="p-8">
                             <h4 className="text-sm font-semibold mb-6">Social</h4>
-
                             <div className="flex items-center gap-4">
-                                {settings?.instagram && (
-                                    <a href={settings.instagram} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
-                                        <Instagram className="w-5 h-5" />
-                                    </a>
-                                )}
-                                {settings?.twitter && (
-                                    <a href={settings.twitter} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
-                                        <Twitter className="w-5 h-5" />
-                                    </a>
-                                )}
-                                {settings?.facebook && (
-                                    <a href={settings.facebook} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
-                                        <Facebook className="w-5 h-5" />
-                                    </a>
-                                )}
-                                {settings?.linkedin && (
-                                    <a href={settings.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
-                                        <Linkedin className="w-5 h-5" />
-                                    </a>
-                                )}
-                                {settings?.youtube && (
-                                    <a href={settings.youtube} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
-                                        <Youtube className="w-5 h-5" />
-                                    </a>
-                                )}
-                                {settings?.github && (
-                                    <a href={settings.github} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
-                                        <Github className="w-5 h-5" />
-                                    </a>
-                                )}
-                                {settings?.email && (
-                                    <a href={`mailto:${settings.email}`} className="p-2 border border-white/20 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group">
-                                        <Mail className="w-5 h-5" />
-                                    </a>
-                                )}
+                                {settings?.instagram && <a href={settings.instagram} target="_blank" rel="noreferrer noopener"><Instagram /></a>}
+                                {settings?.twitter && <a href={settings.twitter} target="_blank" rel="noreferrer noopener"><Twitter /></a>}
+                                {settings?.facebook && <a href={settings.facebook} target="_blank" rel="noreferrer noopener"><Facebook /></a>}
+                                {settings?.linkedin && <a href={settings.linkedin} target="_blank" rel="noreferrer noopener"><Linkedin /></a>}
+                                {settings?.youtube && <a href={settings.youtube} target="_blank" rel="noreferrer noopener"><Youtube /></a>}
+                                {settings?.github && <a href={settings.github} target="_blank" rel="noreferrer noopener"><Github /></a>}
+                                {settings?.email && <a href={`mailto:${settings.email}`}><Mail /></a>}
                             </div>
                         </div>
                     </div>
 
-                    {/* Right Side - Contact Form */}
+                    {/* Contact Form */}
                     <div className="w-full lg:w-[450px] flex-shrink-0">
                         <h3 className="text-2xl font-serif mb-8">Contact</h3>
 
-                        <form className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
                                 <label className="block text-sm text-white/60 mb-2">your name</label>
-                                <input
-                                    type="text"
-                                    className="w-full border-b border-white/30 py-2 bg-transparent focus:outline-none focus:border-white transition-colors text-white"
-                                />
+                                <input name="name" required className="w-full border-b border-white/30 py-2 bg-transparent text-white" />
                             </div>
 
                             <div>
                                 <label className="block text-sm text-white/60 mb-2">your email</label>
-                                <input
-                                    type="email"
-                                    className="w-full border-b border-white/30 py-2 bg-transparent focus:outline-none focus:border-white transition-colors text-white"
-                                />
+                                <input name="email" type="email" required className="w-full border-b border-white/30 py-2 bg-transparent text-white" />
                             </div>
 
                             <div>
                                 <label className="block text-sm text-white/60 mb-2">your message</label>
-                                <input
-                                    type="text"
-                                    className="w-full border-b border-white/30 py-2 bg-transparent focus:outline-none focus:border-white transition-colors text-white"
-                                />
+                                <textarea name="message" required className="w-full border-b border-white/30 py-2 bg-transparent text-white resize-none" />
                             </div>
 
-                            <button
-                                type="submit"
-                                className="w-full text-center text-sm tracking-wide text-white/80 hover:text-white transition-colors mt-4"
-                            >
-                                Send
+                            <button disabled={loading} className="w-full text-sm mt-4">
+                                {loading ? 'Sending...' : 'Send'}
                             </button>
-                        </form>
-                    </div>
-                </div>
 
-                {/* Bottom */}
-                <div className="mt-12 text-sm text-white/60 flex justify-between items-center">
-                    <p>© 2025 Okan Uzun. All rights reserved.</p>
-                    <div className="hidden md:flex gap-6 text-xs text-white/40">
-                        <span>Privacy</span>
-                        <span>Terms</span>
+                            {success && <p className="text-green-400 text-sm">Message sent successfully</p>}
+                            {error && <p className="text-red-400 text-sm">{error}</p>}
+                        </form>
                     </div>
                 </div>
             </div>

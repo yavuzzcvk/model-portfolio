@@ -12,6 +12,78 @@ export default function GalleryPage() {
     const [galleryData, setGalleryData] = useState<APIGalleryItem[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // SEO Meta tags for gallery page
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            // Update document title
+            document.title = 'Gallery | Okan Uzun';
+            
+            // Update meta description
+            let metaDescription = document.querySelector('meta[name="description"]');
+            if (!metaDescription) {
+                metaDescription = document.createElement('meta');
+                metaDescription.setAttribute('name', 'description');
+                document.head.appendChild(metaDescription);
+            }
+            metaDescription.setAttribute('content', 'View Okan Uzun portfolio gallery - Photos and videos from professional work and projects.');
+            
+            // Update canonical URL
+            let canonical = document.querySelector('link[rel="canonical"]');
+            if (!canonical) {
+                canonical = document.createElement('link');
+                canonical.setAttribute('rel', 'canonical');
+                document.head.appendChild(canonical);
+            }
+            const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+            canonical.setAttribute('href', `${baseUrl}/gallery`);
+            
+            // Add breadcrumb schema
+            let breadcrumbScript = document.querySelector('script[data-breadcrumb="gallery"]');
+            if (!breadcrumbScript) {
+                const breadcrumbSchema = {
+                    "@context": "https://schema.org",
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        {
+                            "@type": "ListItem",
+                            "position": 1,
+                            "name": "Home",
+                            "item": baseUrl
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 2,
+                            "name": "Gallery",
+                            "item": `${baseUrl}/gallery`
+                        }
+                    ]
+                };
+                breadcrumbScript = document.createElement('script');
+                breadcrumbScript.setAttribute('type', 'application/ld+json');
+                breadcrumbScript.setAttribute('data-breadcrumb', 'gallery');
+                breadcrumbScript.innerHTML = JSON.stringify(breadcrumbSchema);
+                document.head.appendChild(breadcrumbScript);
+            }
+            
+            // Update OG tags
+            let ogTitle = document.querySelector('meta[property="og:title"]');
+            if (!ogTitle) {
+                ogTitle = document.createElement('meta');
+                ogTitle.setAttribute('property', 'og:title');
+                document.head.appendChild(ogTitle);
+            }
+            ogTitle.setAttribute('content', 'Gallery | Okan Uzun');
+            
+            let ogDescription = document.querySelector('meta[property="og:description"]');
+            if (!ogDescription) {
+                ogDescription = document.createElement('meta');
+                ogDescription.setAttribute('property', 'og:description');
+                document.head.appendChild(ogDescription);
+            }
+            ogDescription.setAttribute('content', 'View Okan Uzun portfolio gallery');
+        }
+    }, []);
+
     useEffect(() => {
         const handleScroll = () => {
             setShowScrollTop(window.scrollY > 400);
@@ -46,7 +118,7 @@ export default function GalleryPage() {
             id: `${item.id}-image`,
             type: 'image' as const,
             src: item.image_url ?? '',
-            alt: `Gallery photo ${item.id}`
+            alt: `Okan Uzun professional modeling portfolio photo - Gallery image ${item.id}`
         }));
 
     const videoItems: GalleryItem[] = galleryData
@@ -55,7 +127,7 @@ export default function GalleryPage() {
             id: `${item.id}-video`,
             type: 'video' as const,
             src: item.video_url ?? '',
-            alt: `Gallery video ${item.id}`
+            alt: `Okan Uzun professional modeling portfolio video - Gallery video ${item.id}`
         }));
 
     const filteredItems = activeFilter === 'image' ? photoItems : videoItems;
@@ -96,7 +168,7 @@ export default function GalleryPage() {
             <div className="max-w-7xl mx-auto px-6">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl md:text-5xl font-serif mb-4">Gallery</h1>
+                    <h1 className="text-4xl md:text-5xl font-serif mb-4">Okan Uzun - Gallery</h1>
 
                     {/* Filter Segment */}
                     <div className="flex justify-center gap-8 mt-8 border-b border-gray-100 pb-4">

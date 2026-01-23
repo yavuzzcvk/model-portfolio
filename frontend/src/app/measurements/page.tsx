@@ -8,6 +8,70 @@ export default function ModelProfile() {
     const [measurementData, setMeasurementData] = useState<MeasurementData | null>(null);
     const [loading, setLoading] = useState(true);
 
+    // SEO Meta tags for measurements page
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            // Update document title
+            document.title = 'Measurements | Okan Uzun';
+            
+            // Update meta description
+            let metaDescription = document.querySelector('meta[name="description"]');
+            if (!metaDescription) {
+                metaDescription = document.createElement('meta');
+                metaDescription.setAttribute('name', 'description');
+                document.head.appendChild(metaDescription);
+            }
+            metaDescription.setAttribute('content', 'Professional model measurements and specifications for Okan Uzun. Height, chest, waist, shoe size and physical attributes.');
+            
+            // Update canonical URL
+            let canonical = document.querySelector('link[rel="canonical"]');
+            if (!canonical) {
+                canonical = document.createElement('link');
+                canonical.setAttribute('rel', 'canonical');
+                document.head.appendChild(canonical);
+            }
+            const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+            canonical.setAttribute('href', `${baseUrl}/measurements`);
+            
+            // Add breadcrumb schema
+            let breadcrumbScript = document.querySelector('script[data-breadcrumb="measurements"]');
+            if (!breadcrumbScript) {
+                const breadcrumbSchema = {
+                    "@context": "https://schema.org",
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        {
+                            "@type": "ListItem",
+                            "position": 1,
+                            "name": "Home",
+                            "item": baseUrl
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 2,
+                            "name": "Measurements",
+                            "item": `${baseUrl}/measurements`
+                        }
+                    ]
+                };
+                breadcrumbScript = document.createElement('script');
+                breadcrumbScript.setAttribute('type', 'application/ld+json');
+                breadcrumbScript.setAttribute('data-breadcrumb', 'measurements');
+                breadcrumbScript.innerHTML = JSON.stringify(breadcrumbSchema);
+                document.head.appendChild(breadcrumbScript);
+            }
+            
+            // Update OG tags
+            let ogTitle = document.querySelector('meta[property="og:title"]');
+            if (!ogTitle) {
+                ogTitle = document.createElement('meta');
+                ogTitle.setAttribute('property', 'og:title');
+                document.head.appendChild(ogTitle);
+            }
+            ogTitle.setAttribute('content', 'Measurements | Okan Uzun');
+        }
+    }, []);
+
     useEffect(() => {
         async function fetchData() {
             const data = await getMeasurements();
@@ -52,7 +116,8 @@ export default function ModelProfile() {
             <div className="max-w-6xl mx-auto">
                 {/* Measurements Single Line */}
                 <div className="mb-16 text-center">
-                    <h2 className="text-3xl font-serif text-gray-900 mb-8">Measurements</h2>
+                    <h1 className="text-4xl font-serif text-gray-900 mb-4">Okan Uzun - Measurements</h1>
+                    <h2 className="text-lg font-serif text-gray-700 mb-6 font-normal">Professional Model Specifications</h2>
                     <p className="text-lg md:text-xl text-gray-800 font-serif tracking-wide">
                         {measurements.map((item, index) => (
                             <span key={index}>
@@ -75,7 +140,7 @@ export default function ModelProfile() {
                                 >
                                     <img
                                         src={photo}
-                                        alt={`Portfolio ${index + 1}`}
+                                        alt={`Okan Uzun model measurements and portfolio photo ${index + 1}`}
                                         className="w-full h-80 object-cover hover:scale-105 transition-transform duration-300"
                                     />
                                 </div>
