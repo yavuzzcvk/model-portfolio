@@ -60,7 +60,6 @@ export default function Home() {
       {/* Buraya diğer section'lar eklenebilir */}
 
       <Hero />
-      <Footer />
 
     </main>
   );

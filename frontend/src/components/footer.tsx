@@ -152,17 +152,17 @@ export default function Footer() {
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
-                                <label className="block text-sm text-white/60 mb-2">your name</label>
+                                <label className="block text-sm text-white/60 mb-2">Your Name</label>
                                 <input name="name" required className="w-full border-b border-white/30 py-2 bg-transparent text-white" />
                             </div>
 
                             <div>
-                                <label className="block text-sm text-white/60 mb-2">your email</label>
+                                <label className="block text-sm text-white/60 mb-2">Your Email</label>
                                 <input name="email" type="email" required className="w-full border-b border-white/30 py-2 bg-transparent text-white" />
                             </div>
 
                             <div>
-                                <label className="block text-sm text-white/60 mb-2">your message</label>
+                                <label className="block text-sm text-white/60 mb-2">Your Message</label>
                                 <textarea name="message" required className="w-full border-b border-white/30 py-2 bg-transparent text-white resize-none" />
                             </div>
 

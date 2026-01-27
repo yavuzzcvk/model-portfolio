@@ -90,7 +90,7 @@ export default async function SplitPage() {
                 <img
                     src={image}
                     alt="Portföy"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-top"
                 />
             </div>
         </div>
