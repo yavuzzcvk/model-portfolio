@@ -1,26 +1,30 @@
-import { Metadata } from "next";
-import Navbar from "@/components/navbar";
 import Hero from "@/components/hero";
-import Footer from "@/components/footer";
-
-export const metadata: Metadata = {
-  title: "Okan Uzun | Professional Model Portfolio",
-  description: "Professional portfolio of Okan Uzun. Discover modeling work, gallery, measurements, and biography. Connect with a talented and professional model.",
-  keywords: "model, portfolio, professional, photography, gallery",
-  alternates: {
-    canonical: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-  },
-  openGraph: {
-    title: "Okan Uzun | Professional Model Portfolio",
-    description: "Professional portfolio of Okan Uzun - Model, photographer, and creative professional",
-    type: "website"
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Okan Uzun | Professional Model Portfolio",
-    description: "Professional portfolio of Okan Uzun"
+export async function generateMetadata() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/settings`, { cache: 'no-store' });
+    const data = await res.json();
+    return {
+      title: data.site_title || "OKAN UZUN",
+      description: data.site_description || "Professional portfolio of Okan Uzun.",
+      keywords: data.site_keywords || "model, portfolio, professional, photography, gallery",
+      openGraph: {
+        title: data.site_title || "OKAN UZUN",
+        description: data.site_description || "Professional portfolio of Okan Uzun.",
+        type: "website"
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: data.site_title || "OKAN UZUN",
+        description: data.site_description || "Professional portfolio of Okan Uzun."
+      }
+    };
+  } catch {
+    return {
+      title: "OKAN UZUN",
+      description: "Professional portfolio of Okan Uzun.",
+    };
   }
-};
+}
 
 export default function Home() {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';

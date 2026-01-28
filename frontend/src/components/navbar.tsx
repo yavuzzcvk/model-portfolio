@@ -5,10 +5,26 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+    const [siteTitle, setSiteTitle] = useState<string>("OKAN UZUN");
     const [scrolled, setScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const pathname = usePathname();
     const isHome = pathname === "/";
+
+    useEffect(() => {
+        async function fetchTitle() {
+            try {
+                const res = await fetch('/api/settings');
+                const data = await res.json();
+                if (data && typeof data.site_title === 'string') {
+                    setSiteTitle(data.site_title);
+                }
+            } catch {
+                // fallback to default
+            }
+        }
+        fetchTitle();
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -22,7 +38,7 @@ export default function Navbar() {
         { name: "Gallery", href: "/gallery" },
         { name: "Biography", href: "/bio" },
         { name: "Measurements", href: "/measurements" },
-        { name: "Contact", href: "/#contact" },
+        { name: "Contact", href: "/contact" },
     ];
 
     const navbarStyles = isHome
@@ -35,7 +51,7 @@ export default function Navbar() {
                 {/* Logo */}
                 <Link href="/" className="group">
                     <div className="text-4xl font-normal tracking-[0.2em] font-serif transition-colors duration-300 group-hover:text-gray-600">
-                        OKAN UZUN
+                        {siteTitle}
                     </div>
                 </Link>
 
